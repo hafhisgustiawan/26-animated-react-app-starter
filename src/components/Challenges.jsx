@@ -1,12 +1,12 @@
-import { useContext, useState } from 'react';
-
-import { ChallengesContext } from '../store/challenges-context.jsx';
-import ChallengeItem from './ChallengeItem.jsx';
-import ChallengeTabs from './ChallengeTabs.jsx';
+import { useContext, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { ChallengesContext } from "../store/challenges-context.jsx";
+import ChallengeItem from "./ChallengeItem.jsx";
+import ChallengeTabs from "./ChallengeTabs.jsx";
 
 export default function Challenges() {
   const { challenges } = useContext(ChallengesContext);
-  const [selectedType, setSelectedType] = useState('active');
+  const [selectedType, setSelectedType] = useState("active");
   const [expanded, setExpanded] = useState(null);
 
   function handleSelectType(newType) {
@@ -24,11 +24,11 @@ export default function Challenges() {
   }
 
   const filteredChallenges = {
-    active: challenges.filter((challenge) => challenge.status === 'active'),
+    active: challenges.filter((challenge) => challenge.status === "active"),
     completed: challenges.filter(
-      (challenge) => challenge.status === 'completed'
+      (challenge) => challenge.status === "completed"
     ),
-    failed: challenges.filter((challenge) => challenge.status === 'failed'),
+    failed: challenges.filter((challenge) => challenge.status === "failed"),
   };
 
   const displayedChallenges = filteredChallenges[selectedType];
@@ -40,19 +40,38 @@ export default function Challenges() {
         onSelectType={handleSelectType}
         selectedType={selectedType}
       >
-        {displayedChallenges.length > 0 && (
-          <ol className="challenge-items">
-            {displayedChallenges.map((challenge) => (
-              <ChallengeItem
-                key={challenge.id}
-                challenge={challenge}
-                onViewDetails={() => handleViewDetails(challenge.id)}
-                isExpanded={expanded === challenge.id}
-              />
-            ))}
-          </ol>
-        )}
-        {displayedChallenges.length === 0 && <p>No challenges found.</p>}
+        <AnimatePresence mode="wait">
+          {displayedChallenges.length > 0 && (
+            <motion.ol
+              key="list"
+              // initial={{ y: -30, opacity: 0 }}
+              exit={{ y: -30, opacity: 0 }}
+              // animate={{
+              //   y: 0,
+              //   opacity: 1,
+              //   transition: { staggerChildren: 0.1 },
+              // }}
+              // transition={{ staggerChildren: 0.1 }}
+              className="challenge-items"
+            >
+              <AnimatePresence>
+                {displayedChallenges?.map((challenge) => (
+                  <ChallengeItem
+                    key={challenge.id}
+                    challenge={challenge}
+                    onViewDetails={() => handleViewDetails(challenge.id)}
+                    isExpanded={expanded === challenge.id}
+                  />
+                ))}
+              </AnimatePresence>
+            </motion.ol>
+          )}
+          {displayedChallenges.length === 0 && (
+            <motion.p key="fallback" animate={{ opacity: [0, 1], x: [-30, 0] }}>
+              No challenges found.
+            </motion.p>
+          )}
+        </AnimatePresence>
       </ChallengeTabs>
     </div>
   );

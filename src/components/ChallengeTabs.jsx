@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import Badge from "./Badge.jsx";
+import { motion } from "framer-motion";
 
 function Tab({ isSelected, onSelect, badgeCaption, children }) {
   return (
@@ -9,9 +10,13 @@ function Tab({ isSelected, onSelect, badgeCaption, children }) {
         onClick={onSelect}
       >
         {children}
-        <Badge caption={badgeCaption}></Badge>
+        {/*INI ADALAH CARA UNTUK TRIGGER MOTION FRAMER UNTUK MELAKUKAN RENDER ULANG DAN AKAN ADA ANIMASI LAGI DENGAN MEMANFAATKAN KEY */}
+        <Badge key={badgeCaption} caption={badgeCaption}></Badge>
       </button>
-      {isSelected && <div className="active-tab-indicator" />}
+      {isSelected && (
+        //DISINI UNTUK ANIMASI LINE TAB
+        <motion.div layoutId="layout-tabs" className="active-tab-indicator" />
+      )}
     </li>
   );
 }
